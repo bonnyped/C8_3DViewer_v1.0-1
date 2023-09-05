@@ -83,11 +83,21 @@ endif
 .dvi:
 ifeq ($(OS),Darwin)
 	rm -rf dvi/doxygen
+	brew install 
 	doxygen dvi/configure_doc
 	open -a "Google Chrome" dvi/doxygen/html/three__d__viewer_8h.html
 	open -a "Google Chrome" dvi/3d_viewer_info.html
 else
-	xdg-open dvi/calc21_info.md
+	sudo apt install doxygen
+	doxygen dvi/configure_doc
+	xdg-open dvi/3d_viewer_info.html
+endif
+
+dvi_install:
+ifeq ($(OS),Darwin)
+	brew install doxygen
+else
+	sudo apt install doxygen
 endif
 
 clang:
@@ -112,10 +122,18 @@ cppcheck:
 	cppcheck --enable=all *.c *.h
 
 download: 
+ifeq ($(OS),Darwin)
 	open -a "Google Chrome" https://disk.yandex.lt/d/2eS3HXfFbibqng
+else
+	xdg-open https://disk.yandex.lt/d/2eS3HXfFbibqng
+endif
 
 to_run :
+ifeq ($(OS),Darwin)
 	cd ../build_hamlet_3dviewer/hamletViewer.app/Contents/MacOS/ && chmod 557 hamletViewer &&./hamletViewer
+else
+	cd ../build_hamlet_3dviewer/ && chmod 557 hamletViewer &&./hamletViewer
+endif
 
 rename_file:
 	mv -f files_model_obj/cube* files_model_obj/cube.obj
