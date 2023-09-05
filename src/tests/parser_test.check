@@ -1,0 +1,144 @@
+#suite parser_obj_file
+
+
+
+#test parser_obj_file_1
+    char *sym_link_path = "./files_model_obj/cube";
+    char actual_path [MAX_SIZE_PATH+1];
+    char *absolute_path  = NULL;
+    absolute_path = realpath(sym_link_path, actual_path);
+    printf("absolute_path = %s\n", absolute_path);
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    ck_assert_int_eq(parse_the_model_file_obj_head(&model,absolute_path), ALL_RIGHT);
+    free_model(&model);
+    
+#test parser_obj_file_2
+    char *sym_link_path = "files_model_obj/cub.obj";
+    char actual_path [MAX_SIZE_PATH+1];
+    char *absolute_path  = NULL;
+    absolute_path = realpath(sym_link_path, actual_path);
+
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    ck_assert_int_eq(parse_the_model_file_obj_head(&model,absolute_path), ERROR);
+    free_model(&model);
+    
+
+#test parser_obj_file_3
+    char *sym_link_path = "files_model_obj/cub.obj";
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    ck_assert_int_eq(parse_the_model_file_obj_head(&model,sym_link_path), THE_FILE_CANNOT_BE_OPENED);
+    free_model(&model);
+
+#test parser_obj_file_4
+    char *sym_link_path = "files_model_obj/Empty";
+    char actual_path [MAX_SIZE_PATH+1];
+    char *absolute_path  = NULL;
+    absolute_path = realpath(sym_link_path, actual_path);
+    printf("absolute_path = %s\n", absolute_path);
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    ck_assert_int_eq(parse_the_model_file_obj_head(&model,absolute_path), ERROR_INDEX_F);
+    free_model(&model);
+
+#test parser_obj_file_5
+    char *sym_link_path = "files_model_obj/emptyfile";
+    char actual_path [MAX_SIZE_PATH+1];
+    char *absolute_path  = NULL;
+    absolute_path = realpath(sym_link_path, actual_path);
+    printf("absolute_path = %s\n", absolute_path);
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    zero_out_the_structure(&model);
+    ck_assert_int_eq(parse_the_model_file_obj_head(&model,absolute_path), ZERO_VALUE_WHEN_COUNTING);
+    free_model(&model);
+
+
+#test parser_obj_file_6
+    char *sym_link_path = "files_model_obj/pyramid";
+    char actual_path [MAX_SIZE_PATH+1];
+    char *absolute_path  = NULL;
+    absolute_path = realpath(sym_link_path, actual_path);
+
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    zero_out_the_structure(&model);
+    model.vertex_obj = (double*)calloc(10, sizeof(double));
+    model.polygons_obj = (int*)calloc(10, sizeof(int));
+    ck_assert_int_eq(parse_the_model_file_obj_head(&model,absolute_path), ALL_RIGHT);
+    free_model(&model);
+    
+#test parser_obj_file_7
+    char *sym_link_path = "files_model_obj/pyramid";
+    char actual_path [MAX_SIZE_PATH+1];
+    char *absolute_path  = NULL;
+    absolute_path = realpath(sym_link_path, actual_path);
+
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    zero_out_the_structure(&model);
+    model.vertex_obj = (double*)calloc(10, sizeof(double));
+    model.polygons_obj = (int*)calloc(10, sizeof(int));
+    model.buffer = (char*)calloc(10, sizeof(char));
+    free_model(&model);
+    ck_assert_int_eq(parse_the_model_file_obj_head(&model,absolute_path), ALL_RIGHT);
+    free_model(&model);
+
+#test parser_obj_file_8
+    double x = 0;
+    double y = 1.0;
+    double z = 0;
+    ck_assert_double_eq(max_value(x,y,z), 1.0);
+
+    x = 0.0;
+    y = 0.0;
+    z = 1.0;
+    ck_assert_double_eq(max_value(x,y,z), 1.0);
+
+#test parser_obj_file_9
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    zero_out_the_structure(&model);
+    char str[10] = "-1 2 3\0";
+    char* str2 = (char*)calloc(10+1, sizeof(char));
+    strcpy(str2,str);
+    model.count_v = 9;
+    model.number_struct.number_of_vertices = 3;
+    model.vertex_obj = (double*)calloc(9, sizeof(double));
+    model.polygons_obj = (int*)calloc(6, sizeof(int));
+    ck_assert_int_eq(write_polygons(&model, str2), ALL_RIGHT);
+    free_model(&model);
+    free(str2);
+
+
+#test parser_obj_file_10
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    zero_out_the_structure(&model);
+    model.count_v = 9;
+    model.vertex_obj = (double*)calloc(9, sizeof(double));
+    for(int i = 0; i < 9; i++) {
+        model.vertex_obj[i] = i;
+    }
+    index_vertex(&x, &y, &z, 1, &model);
+    free_model(&model);
+    ck_assert_double_eq(x, 0.0);
+    ck_assert_double_eq(y, 1.0);
+    ck_assert_double_eq(z, 2.0);
+    
+
+#test parser_obj_file_11
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    zero_out_the_structure(&model);
+    model.count_v = 9;
+    model.vertex_obj = (double*)calloc(9, sizeof(double));
+    for(int i = 0; i < 9; i++) {
+        model.vertex_obj[i] = i;
+    }
+    ck_assert_int_eq(index_vertex(&x, &y, &z, 0, &model), ERROR);
+    free_model(&model);
+    ck_assert_double_eq(x, 0.0);
+    ck_assert_double_eq(y, 0.0);
+    ck_assert_double_eq(z, 0.0);
+    
+
+   

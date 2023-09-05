@@ -1,0 +1,2 @@
+#include "three_d_viewer.h"
+#define MAX_SIZE_PATH 500

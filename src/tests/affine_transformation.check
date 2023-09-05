@@ -1,0 +1,26 @@
+#suite affine_transformation
+
+
+#test affine_transformation_all
+    model_v model = {NULL,0,0,NULL,NULL,{0,0},{0.0,0.0,0.0,0.0,0.0,0.0,0}};
+    zero_out_the_structure(&model);
+    model.count_v = 9;
+    model.number_struct.number_of_vertices = 3;
+    model.vertex_obj = (double*)calloc(9, sizeof(double));
+    for(int i = 1; i < 10; i++) {
+        model.vertex_obj[i-1] = i/10.0;
+    }
+    double end_massiv[9] = {3.21744817, 2.40667747, 1.68934687, 3.83820355, 3.00631518, 2.26822282, 4.45895893, 3.60595289, 2.84709878};
+    x_axis_rotation(&model, 1.0);
+    y_axis_rotation(&model, 1.0);
+    z_axis_rotation(&model, 1.0);
+    model_scale(&model, 2);
+    move_the_model_along_the_x_axis(&model, 3);
+    move_the_model_along_the_y_axis(&model, 2);
+    move_the_model_along_the_z_axis(&model, 1.1);
+    for(int i = 0; i < 9; i++) {
+        ck_assert_double_eq_tol(model.vertex_obj[i], end_massiv[i], 0.0000001);
+    }
+    free_model(&model);
+
+
