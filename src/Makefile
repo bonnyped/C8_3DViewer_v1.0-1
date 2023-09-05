@@ -83,7 +83,6 @@ endif
 .dvi:
 ifeq ($(OS),Darwin)
 	rm -rf dvi/doxygen
-	brew install 
 	doxygen dvi/configure_doc
 	open -a "Google Chrome" dvi/doxygen/html/three__d__viewer_8h.html
 	open -a "Google Chrome" dvi/3d_viewer_info.html
@@ -93,7 +92,7 @@ else
 	xdg-open dvi/3d_viewer_info.html
 endif
 
-dvi_install:
+install_dvi:
 ifeq ($(OS),Darwin)
 	brew install doxygen
 else
